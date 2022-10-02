@@ -1,0 +1,42 @@
+networks:
+  default:
+    name: nd_network
+services:
+  navidrome:
+    container_name: nd_navidrome
+    environment:
+      # Set Navidrome environment variables here.
+      ND_DATAFOLDER: /etc/navidrome/data
+      ND_MUSICFOLDER: /etc/navidrome/music
+      ND_PORT: 6284
+    image: deluan/navidrome:latest
+    expose:
+      - 6284
+    restart: unless-stopped
+    user: 1000:1000
+    volumes:
+      # Set Navidrome data and music folders here.
+      - ../navidrome-data:/etc/navidrome/data
+      - ../navidrome-music:/etc/navidrome/music
+  nginx:
+    container_name: nd_nginx
+    environment:
+      ND_PORT: 6284
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
+      # Set HTTPS host and port here.
+      NGINX_HTTPS_HOST: localhost
+      NGINX_HTTPS_PORT: 6285
+      # Set HTTP host and port here.
+      NGINX_HTTP_HOST: localhost
+      NGINX_HTTP_PORT: 6284
+      # Set SSL certificate and key here.
+      NGINX_SSL_CERTIFICATE: /etc/letsencrypt/live/<HTTPS_HOST>/fullchain.pem
+      NGINX_SSL_CERTIFICATE_KEY: /etc/letsencrypt/live/<HTTPS_HOST>/privkey.pem
+    image: nginx:latest
+    ports:
+      # Set HTTP and HTTPS ports here.
+      - 6284:6284
+      - 6285:6285
+    volumes:
+      - ../nginx-templates:/etc/nginx/templates
+      - /etc/letsencrypt:/etc/letsencrypt

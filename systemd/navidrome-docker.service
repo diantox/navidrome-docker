@@ -1,0 +1,13 @@
+[Unit]
+Description=Navidrome
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/opt/navidrome-docker
+ExecStart=docker compose -f ./containers/navidrome.compose.yaml up
+ExecStop=docker compose -f ./containers/navidrome.compose.yaml down
+ExecReload=docker compose -f ./containers/navidrome.compose.yaml restart
+
+[Install]
+WantedBy=multi-user.target
